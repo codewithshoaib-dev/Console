@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useAuth } from "../stores/useAuth";
 
-const baseURL = "http://localhost:8000/";
+const baseURL =  import.meta.env.MODE !== "production" ? 
+  "http://localhost:8000/" :
+ "https://api.gosaasbuild.com" ;
 
 const apiClient = axios.create({
   baseURL,
