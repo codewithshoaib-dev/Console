@@ -4,7 +4,7 @@ import apiClient from "../api/ApiClient";
 import { handleAxiosError } from "../utils/handleAxiosError";
 import { Eye, EyeOff, CheckCircle2, AlertCircle } from "lucide-react";
 
-export default function InviteSignup() {
+export default function InviteSignupForm() {
   const { token } = useParams();
 
 

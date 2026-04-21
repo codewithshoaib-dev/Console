@@ -15,7 +15,7 @@ const ImportsPage = lazy(() => import("./pages/ImportsPage"));
 
 const ContactsPage = lazy(() => import("./pages/ContactsPage"));
 
-import InviteSignupform from "./pages/InviteSignupform";
+import InviteSignupForm from "./pages/InviteSignupform";
 
 const ImportPreviewPage = lazy(() => import("./pages/ImportsPreview"));
 
@@ -79,12 +79,7 @@ function App() {
           />
         </Route>
 
-        <Route
-          path="/invite/:token"
-          element={
-              <InviteSignupform />
-          }
-        />
+        <Route path="/invite/:token" element={<InviteSignupForm />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
