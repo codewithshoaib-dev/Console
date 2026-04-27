@@ -9,6 +9,8 @@ from core.views.members import MemberDetailView, MemberListCreateView
 from core.views.dashboard import DashboardAPIView
 from core.views.invite_members import CreateInviteView, SignupFromInviteView, ConfirmTokenStatusView
 
+from .view import TriggerSeedView
+
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('refresh/', RefreshView.as_view(), name='refresh'),
@@ -29,6 +31,9 @@ urlpatterns = [
     path("workspaces/<int:workspace_id>/contacts/", ListContactsView.as_view(), name="list-contacts"),
      path("workspaces/<int:workspace_id>/contacts/create/", CreateContactsView.as_view(), name="create-contacts"),
      path("workspaces/<int:workspace_id>/contacts/<int:contact_id>/", DetailContactsView.as_view(), name="delete-contacts"),
+
+
+     path("internal/seed/", TriggerSeedView.as_view(), name="trigger-seed"),
 
 
 ]
