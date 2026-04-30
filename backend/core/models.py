@@ -48,6 +48,16 @@ class WorkspaceMembership(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="member")
     joined_at = models.DateTimeField(default=timezone.now)
 
+    last_active_at = models.DateTimeField(null=True, blank=True)
+
+    job_title = models.CharField(max_length=100, blank=True)
+    department = models.CharField(max_length=100, blank=True)
+
+    tasks_created_count = models.IntegerField(default=0)
+    tasks_completed_count = models.IntegerField(default=0)
+
+    is_online = models.BooleanField(default=False)
+
     class Meta:
         unique_together = ("user", "workspace")
         indexes = [
