@@ -1,5 +1,6 @@
 import { Users, Activity, Database, AlertTriangle } from "lucide-react";
 import { useConsoleDashboard } from "../stores/useConsoleDashboard";
+import { KPICard, COLORS } from "./ui/KPICard"
 
 export default function Metrics() {
   const metrics = useConsoleDashboard((s) => s.metrics);
@@ -8,58 +9,52 @@ export default function Metrics() {
     {
       label: "Active users",
       value: metrics?.active_users_7d ?? 0,
-      desc: `${metrics?.contacts_7d ?? 0} contacts created`,
-      icon: Users,
+      change: `${metrics?.change_in_active_users ?? 0} vs last week`,
+      positive: (metrics?.change_in_active_users ?? 0) >= 0,
+      color: COLORS.indigo,
+      sparkData: metrics?.active_users_trend ?? [0, 0, 0, 0, 0],
     },
     {
-      label: "Active workspaces",
-      value: metrics?.active_workspaces_7d ?? 0,
-      desc: `${metrics?.owned_workspaces ?? 0} owned`,
-      icon: Activity,
+      label: "Contacts added",
+      value: metrics?.contacts_7d ?? 0,
+      change: `${metrics?.contacts_total ?? 0} total`,
+      positive: (metrics?.contacts_7d ?? 0) >= 0,
+      color: COLORS.sky,
+      sparkData: metrics?.contacts_trend ?? [0, 0, 0, 0, 0],
     },
     {
       label: "Import success",
-      value: metrics ? `${Math.round(metrics.import_success_rate * 100)}%` : "0%",
-      desc: `${metrics?.rows_processed_7d ?? 0} rows processed`,
-      icon: Database,
+      value: metrics
+        ? `${Math.round((metrics.import_success_rate ?? 0) * 100)}%`
+        : "0%",
+      change: `${metrics?.rows_processed_7d ?? 0} rows processed`,
+      positive: (metrics?.import_success_rate ?? 0) >= 0.8,
+      color: COLORS.emerald,
+      sparkData: metrics?.import_trend ?? [0, 0, 0, 0, 0],
     },
     {
       label: "Failed actions",
       value: metrics?.failed_actions_24h ?? 0,
-      desc: "Last 24 hours",
-      icon: AlertTriangle,
+      change: "Last 24 hours",
+      positive: (metrics?.failed_actions_24h ?? 0) === 0,
+      color: COLORS.rose,
+      sparkData: metrics?.failed_actions_trend ?? [0, 0, 0, 0, 0],
     },
   ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {items.map((item, index) => {
-        const Icon = item.icon;
-        const isPercentage =
-          typeof item.value === "string" && item.value.includes("%");
-
-        return (
-          <div
-            key={index}
-            className="rounded-xl border border-border bg-card text-card-foreground shadow-sm"
-          >
-            <div className="flex flex-row items-center justify-between space-y-0 p-6 pb-2">
-              <h3 className="tracking-tight text-sm font-medium text-foreground">
-                {item.label}
-              </h3>
-              <Icon className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <div className="p-6 pt-0">
-              <div className="text-2xl font-bold">
-                {isPercentage
-                  ? item.value
-                  : new Intl.NumberFormat("en-US").format(Number(item.value))}
-              </div>
-              <p className="text-xs text-muted-foreground mt-2">{item.desc}</p>
-            </div>
-          </div>
-        );
-      })}
+      {items.map((item, index) => (
+        <KPICard
+          key={index}
+          label={item.label}
+          value={item.value}
+          change={item.change}
+          positive={item.positive}
+          sparkData={item.sparkData}
+          color={item.color}
+        />
+      ))}
     </div>
   );
 }

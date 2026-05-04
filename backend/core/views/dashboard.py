@@ -7,6 +7,34 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from .workspaces import WorkspaceAPIView
 from core.models import Contact, ImportSession, AuditLog, WorkspaceMembership
 
+from django.db.models.functions import TruncDate
+
+def get_daily_trend(qs, date_field, days=5, aggregate=Count("id"), extra_filter=None):
+    now = timezone.now()
+    start = (now - timezone.timedelta(days=days - 1)).date()  
+
+    base_qs = qs
+    if extra_filter:
+        base_qs = base_qs.filter(**extra_filter)
+
+    data = (
+        base_qs
+        .annotate(day=TruncDate(date_field))
+        .values("day")
+        .annotate(value=aggregate)
+        .filter(day__gte=start)  
+        .order_by("day")
+    )
+
+    result_map = {entry["day"]: entry["value"] for entry in data}
+
+    trend = []
+    for i in range(days):
+        day = start + timezone.timedelta(days=i)
+        trend.append(result_map.get(day, 0))
+
+    return trend
+
 
 class DashboardAPIView(WorkspaceAPIView):
     authentication_classes = [JWTAuthentication]
@@ -18,6 +46,7 @@ class DashboardAPIView(WorkspaceAPIView):
 
         now = timezone.now()
         week_ago = now - timezone.timedelta(days=7)
+        two_weeks_ago = now - timezone.timedelta(days=14)
         day_ago = now - timezone.timedelta(days=1)
 
         contacts_qs = Contact.objects.filter(workspace_id=workspace_id)
@@ -63,35 +92,54 @@ class DashboardAPIView(WorkspaceAPIView):
         )
 
         active_users_7d = logs_qs.filter(timestamp__gte=week_ago).values("user_id").distinct().count()
-        active_workspaces_7d = logs_qs.filter(timestamp__gte=week_ago).values("workspace_id").distinct().count()
+
+        active_users_last_week = logs_qs.filter(timestamp__gte=two_weeks_ago).filter(timestamp__lte=week_ago).values("user_id").distinct().count()
+
+        change_in_active_users = active_users_7d - active_users_last_week
+
+
+        active_users_trend = get_daily_trend(
+            logs_qs,
+            "timestamp",
+            aggregate=Count("user_id", distinct=True)
+            )
+
+        contacts_trend = get_daily_trend(
+            contacts_qs,
+            "created_at"
+        )
+
+        import_trend = get_daily_trend(
+            imports_qs,
+            "created_at",
+            aggregate=Sum("row_count")
+        )
+
+        failed_actions_trend = get_daily_trend(
+            logs_qs,
+            "timestamp",
+            extra_filter={"status__in": ["failed", "denied"]}
+        )
+
+
 
         metrics = {
             "active_users_7d": active_users_7d,
-            "active_workspaces_7d": active_workspaces_7d,
+            "change_in_active_users": change_in_active_users,
+            "active_users_trend": active_users_trend,
 
-            "members_total": members_qs.count(),
-            "admins_total": members_qs.filter(role="admin").count(),
-
-            "contacts_total": contacts_qs.count(),
             "contacts_7d": contacts_qs.filter(created_at__gte=week_ago).count(),
+            "contacts_trend": contacts_trend,
 
-            "imports_total": import_stats["total"],
             "import_success_rate": (
                 import_stats["committed"] / import_stats["total"]
                 if import_stats["total"] else 0
             ),
             "rows_processed_7d": import_stats["rows_7d"] or 0,
+            "import_trend": import_trend,
 
             "failed_actions_24h": log_stats["failed_24h"],
-
-            "owned_workspaces": WorkspaceMembership.objects.filter(
-                user=user,
-                role="owner"
-            ).count(),
-
-            "member_workspaces": WorkspaceMembership.objects.filter(
-                user=user
-            ).count(),
+            "failed_actions_trend": failed_actions_trend,
         }
 
         return Response({
