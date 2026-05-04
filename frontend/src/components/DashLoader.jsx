@@ -30,9 +30,6 @@ export default function DashLoader({ sessionStatus }) {
 
       {/* Text Content */}
       <div className="mt-8 flex flex-col items-center gap-2">
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-muted-foreground/80 animate-pulse">
-          {sessionStatus === "booting" ? "System" : "Security"}
-        </p>
 
         <div className="h-8 overflow-hidden">
           <p
