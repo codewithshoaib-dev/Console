@@ -14,7 +14,7 @@ export default function ErrorScreen({ error, onRetry }) {
           Session Error
         </h2>
 
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+        <p className="mt-2 text-sm text-foreground leading-relaxed">
           {error?.message ||
             "We couldn’t restore your session. Please try again if the issue persists."}
         </p>
