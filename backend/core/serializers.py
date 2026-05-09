@@ -17,7 +17,7 @@ class WorkspaceMemberSerializer(serializers.ModelSerializer):
 class ImportSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImportSession
-        fields = ["id", "workspace", "uploaded_by", "original_filename", "status", "headers", "row_count", "created_at"]
+        fields = ["id", "workspace", "uploaded_by", "original_filename", "status", "headers", "row_count", "invalid_rows", "created_at"]
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
