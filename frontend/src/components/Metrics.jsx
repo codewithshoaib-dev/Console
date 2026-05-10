@@ -9,41 +9,39 @@ export default function Metrics() {
     {
       label: "Active users",
       value: metrics?.active_users_7d ?? 0,
-      change: `${metrics?.change_in_active_users ?? 0} vs last week`,
-      positive: (metrics?.change_in_active_users ?? 0) >= 0,
+      change: `${metrics?.change_in_active_users ?? 0}%`,
+      positive: metrics?.change_in_active_users_positive ?? false,
       color: COLORS.indigo,
       sparkData: metrics?.active_users_trend ?? [0, 0, 0, 0, 0],
     },
     {
       label: "Contacts added",
       value: metrics?.contacts_7d ?? 0,
-      change: `${metrics?.contacts_total ?? 0} total`,
-      positive: (metrics?.contacts_7d ?? 0) >= 0,
+      change: `${metrics?.change_in_contacts ?? 0}%`,
+      positive: metrics?.change_in_contacts_positive ?? false,
       color: COLORS.sky,
       sparkData: metrics?.contacts_trend ?? [0, 0, 0, 0, 0],
     },
     {
-      label: "Import success",
-      value: metrics
-        ? `${Math.round((metrics.import_success_rate ?? 0) * 100)}%`
-        : "0%",
-      change: `${metrics?.rows_processed_7d ?? 0} rows processed`,
-      positive: (metrics?.import_success_rate ?? 0) >= 0.8,
+      label: "Rows processed",
+      value: metrics?.rows_processed_7d,
+      change: `${metrics?.change_in_processed_rows ?? 0}%`,
+      positive: metrics?.change_in_processed_rows ?? false,
       color: COLORS.emerald,
-      sparkData: metrics?.import_trend ?? [0, 0, 0, 0, 0],
+      sparkData: metrics?.rows_processed_trend ?? [0, 0, 0, 0, 0],
     },
     {
       label: "Failed actions",
-      value: metrics?.failed_actions_24h ?? 0,
-      change: "Last 24 hours",
-      positive: (metrics?.failed_actions_24h ?? 0) === 0,
+      value: metrics?.failed_actions_7d ?? 0,
+      change: `${metrics?.change_in_failed_actions ?? 0}%`,
+      positive: metrics?.change_in_failed_actions_positive ?? false,
       color: COLORS.rose,
       sparkData: metrics?.failed_actions_trend ?? [0, 0, 0, 0, 0],
     },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4 ">
       {items.map((item, index) => (
         <KPICard
           key={index}
