@@ -34,35 +34,50 @@ export default function MembersPage() {
     setIsModalOpen(true);
   };
 
-  useEffect(() => {
-    if (!workspaceId) return;
+useEffect(() => {
+  if (!workspaceId) return;
 
-    setParams({ page: "1", search: debouncedSearch });
-  }, [debouncedSearch, workspaceId]);
+  const newParams = {};
+  if (debouncedSearch) {
+    newParams.search = debouncedSearch;
+  }
 
-  useEffect(() => {
-    if (!workspaceId) {
-      return;
-    }
-    const currentSearch = params.get("search") || "";
-    const currentPage = Number(params.get("page") || 1);
-    load(currentPage, currentSearch);
-  }, [workspaceId, params]);
+  newParams.page = "1";
+
+  setParams(newParams);
+}, [debouncedSearch, workspaceId]);
+
+useEffect(() => {
+  if (!workspaceId) {
+    return;
+  }
+  const currentSearch = params.get("search") || "";
+  const currentPage = Number(params.get("page") || 1);
+  load(currentPage, currentSearch);
+}, [workspaceId, params]);
+
+const onPageChange = (newPage) => {
+  if (typeof newPage !== "number") {
+    console.error("INVALID PAGE:", newPage);
+    return;
+  }
+
+  const newParams = {};
+
+  if (newPage !== 1) {
+    newParams.page = String(newPage);
+  }
+
+  // Preserve search if it exists
+  const search = params.get("search");
+  if (search) {
+    newParams.search = search;
+  }
+
+  setParams(newParams);
+};
 
   const filtered = list;
-
- 
-  const onPageChange = (newPage) => {
-    if (typeof newPage !== "number") {
-      console.error("INVALID PAGE:", newPage);
-      return;
-    }
-    setParams({
-      page: String(newPage),
-      search: params.get("search") || "",
-    });
-
-  };
 
   if (loading) return <PageSkeleton />;
 
