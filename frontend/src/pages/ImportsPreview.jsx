@@ -71,8 +71,8 @@ function PreviewHeader({ meta }) {
       <AlertTriangle className="text-muted-foreground" />
       <div>
         <div className="text-sm font-semibold text-heading">Import Preview</div>
-        <div className="text-xs text-muted-foreground">
-          {meta.valid_rows} valid · {meta.invalid_rows} invalid
+        <div className="text-[13px] text-muted-foreground">
+          {meta.valid_rows || 0} valid · {meta.invalid_rows || 0} invalid
         </div>
       </div>
     </header>
@@ -86,7 +86,7 @@ function FilterBar({ invalidOnly, setInvalidOnly }) {
         name="filter-all"
         onClick={() => setInvalidOnly(false)}
         className={`text-xs px-3 py-1 rounded-md font-medium ${
-          !invalidOnly ? "bg-muted text-background" : "text-muted-foreground"
+          !invalidOnly ? "bg-muted text-foreground" : "text-muted-foreground"
         }`}
       >
         All rows
