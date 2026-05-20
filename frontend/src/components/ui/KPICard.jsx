@@ -69,6 +69,10 @@ export function Sparkline({
 
 
 export function KPICard({ label, value, change, positive = true, sparkData, color = COLORS.indigo }) {
+
+  const showPositive = label === "Failed actions" ? !positive : positive;
+
+
   return (
     <div className="bg-card rounded-2xl border border-border p-5">
       <p className="text-[14px] text-muted-foreground font-semibold mb-3 leading-none">
@@ -81,8 +85,8 @@ export function KPICard({ label, value, change, positive = true, sparkData, colo
           </p>
 
           <span
-            className={`inline-flex items-center gap-2 text-[16px] font-mono px-2 py-1 rounded-full ${
-              positive
+            className={`inline-flex items-center gap-2 text-[14px] font-mono px-2 py-1 rounded-full ${
+              showPositive
                 ? "bg-positive text-positive-foreground"
                 : "bg-negative text-negative-foreground"
             }`}
