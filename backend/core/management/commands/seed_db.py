@@ -28,8 +28,32 @@ class Command(BaseCommand):
         parser.add_argument("--rows", type=int, default=120)
         parser.add_argument("--audits", type=int, default=300)
 
+        parser.add_argument(
+            "--clear", 
+            action="store_true", 
+            help="Wipe the database tables before running the seed script"
+        )
+
 
     def handle(self, *args, **opts):
+
+        if opts["clear"]:
+            self.stdout.write(self.style.WARNING("Clearing existing data from tables..."))
+            
+           
+            AuditLog.objects.all().delete()
+            ImportRow.objects.all().delete()
+            ImportSession.objects.all().delete()
+            Contact.objects.all().delete()
+            WorkspaceMembership.objects.all().delete()
+            Workspace.objects.all().delete()
+            
+        
+            User.objects.filter(is_superuser=False).delete()
+            
+            self.stdout.write(self.style.SUCCESS("Database cleared successfully."))
+
+
         total_users = opts["users"]
         total_workspaces = opts["workspaces"]
 
@@ -212,7 +236,7 @@ class Command(BaseCommand):
                         row_index=i,
                         raw_data=data,
                         is_valid=valid,
-                        errors=None if valid else {"email":"Invalid"},
+                        errors=None if valid else "Invalid email",
                     ))
                     if r:
                         created["rows"] += 1
@@ -222,11 +246,11 @@ class Command(BaseCommand):
         self.stdout.write("Creating audit logs...")
 
         actions = [
-            ("create","Contact"),
-            ("update","Contact"),
-            ("delete","Contact"),
-            ("import","ImportSession"),
-            ("invite","WorkspaceMembership"),
+            ("create_contact","Contact"),
+            ("update_contact","Contact"),
+            ("delete_contact","Contact"),
+            ("import_session","ImportSession"),
+            ("invite_member","WorkspaceMembership"),
         ]
 
         for _ in range(total):

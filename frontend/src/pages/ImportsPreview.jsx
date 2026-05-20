@@ -123,10 +123,6 @@ function PreviewTable({ rows }) {
     return String(value);
   };
 
-  const renderErrors = (errors) => {
-    if (!errors || !errors.length) return "";
-    return errors.join(", ");
-  };
 
   return (
     <>
@@ -163,7 +159,7 @@ function PreviewTable({ rows }) {
                 </td>
               ))}
               <td className="border-b border-border px-4 py-2 text-xs text-destructive">
-                {renderErrors(row.errors)}
+                {Array.isArray(row.errors) ? row.errors.join(", ") : row.errors}
               </td>
             </tr>
           ))}
@@ -189,7 +185,7 @@ function PreviewTable({ rows }) {
 
             {row.errors?.length > 0 && (
               <div className="mt-2 text-xs text-destructive">
-                {renderErrors(row.errors)}
+                {Array.isArray(row.errors) ? row.errors.join(", ") : row.errors}
               </div>
             )}
           </div>
