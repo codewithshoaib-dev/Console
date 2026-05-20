@@ -22,7 +22,6 @@ export const useLogs = create((set, get) => ({
       error: null,
     });
 
-    await get().load(true);
   },
 
   load: async (initial = false) => {
